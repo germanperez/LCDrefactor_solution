@@ -2,8 +2,6 @@ package com.pslcorp.domain;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.pslcorp.utils.Constants;
 import com.pslcorp.utils.Utilities;
@@ -30,9 +28,6 @@ public class ImpresorLCD {
     private int totalColumns;
     
     private String[][] impressionMatrix;
-    
-    /** ImpresorLCD Logger */
-    private final static Logger LOGGER = Logger.getLogger(ImpresorLCD.class.getName());
     
     /**
      * Class constructor.
@@ -115,22 +110,25 @@ public class ImpresorLCD {
      * @param fixedPosition the fixed position
      * @param size          the segment size
      * @param character     the segment character
-     * 
-     * @throws ArrayIndexOutOfBoundsException
      */
     private void addLineToMatrix(String[][] matrix, int[] point, String fixedPosition, 
-    		int size, String character) throws ArrayIndexOutOfBoundsException {
+    		int size, String character) {
 
-    	if (Constants.X_POSITION.equalsIgnoreCase(fixedPosition)) {
-    		for (int i = 1; i <= size; i++) {
-    			int value = point[1] + i;
-    			matrix[point[0]][value] = character;
-    		}
-    	} else {
-    		for (int i = 1; i <= size; i++) {
-    			int value = point[0] + i;
-    			matrix[value][point[1]] = character;
-    		}
+    	try {
+	    	if (Constants.X_POSITION.equalsIgnoreCase(fixedPosition)) {
+	    		for (int i = 1; i <= size; i++) {
+	    			int value = point[1] + i;
+	    			matrix[point[0]][value] = character;
+	    		}
+	    	} else {
+	    		for (int i = 1; i <= size; i++) {
+	    			int value = point[0] + i;
+	    			matrix[value][point[1]] = character;
+	    		}
+	    	}
+	    	
+    	} catch (ArrayIndexOutOfBoundsException e) {
+    		System.out.println(Constants.ERROR_MESSAGE + e.getMessage());
     	}
     }
     
@@ -142,41 +140,37 @@ public class ImpresorLCD {
      */
     private void addSegmentToMatrix(int segment) {
     	
-    	try {
-	    	switch (segment) {
-	        	case 1:
-	        		addLineToMatrix(this.impressionMatrix, this.fixedPoint1, Constants.Y_POSITION,
-	        				this.size, Constants.VERTICAL_CHARACTER);
-	                break;
-	        	case 2:
-	        		addLineToMatrix(this.impressionMatrix, this.fixedPoint2, Constants.Y_POSITION,
-	        				this.size, Constants.VERTICAL_CHARACTER);
-	        		break;
-	        	case 3:
-	        		addLineToMatrix(this.impressionMatrix, this.fixedPoint5, Constants.Y_POSITION,
-	        				this.size, Constants.VERTICAL_CHARACTER);
-	        		break;
-	        	case 4:
-	        		addLineToMatrix(this.impressionMatrix, this.fixedPoint4, Constants.Y_POSITION,
-	        				this.size, Constants.VERTICAL_CHARACTER);
-	        		break;
-	        	case 5:
-	        		addLineToMatrix(this.impressionMatrix, this.fixedPoint1, Constants.X_POSITION,
-	        				this.size, Constants.HORIZONTAL_CHARACTER);
-	        		break;
-	        	case 6:
-	        		addLineToMatrix(this.impressionMatrix, this.fixedPoint2, Constants.X_POSITION,
-	        				this.size, Constants.HORIZONTAL_CHARACTER);
-	        		break;
-	        	case 7:
-	        		addLineToMatrix(this.impressionMatrix, this.fixedPoint3, Constants.X_POSITION,
-	        				this.size, Constants.HORIZONTAL_CHARACTER);
-	        		break;
-	        	default:
-	        		break;
-	    	}
-    	} catch (ArrayIndexOutOfBoundsException e) {
-    		LOGGER.log(Level.SEVERE, e.toString(), e);
+    	switch (segment) {
+        	case 1:
+        		addLineToMatrix(this.impressionMatrix, this.fixedPoint1, Constants.Y_POSITION,
+        				this.size, Constants.VERTICAL_CHARACTER);
+                break;
+        	case 2:
+        		addLineToMatrix(this.impressionMatrix, this.fixedPoint2, Constants.Y_POSITION,
+        				this.size, Constants.VERTICAL_CHARACTER);
+        		break;
+        	case 3:
+        		addLineToMatrix(this.impressionMatrix, this.fixedPoint5, Constants.Y_POSITION,
+        				this.size, Constants.VERTICAL_CHARACTER);
+        		break;
+        	case 4:
+        		addLineToMatrix(this.impressionMatrix, this.fixedPoint4, Constants.Y_POSITION,
+        				this.size, Constants.VERTICAL_CHARACTER);
+        		break;
+        	case 5:
+        		addLineToMatrix(this.impressionMatrix, this.fixedPoint1, Constants.X_POSITION,
+        				this.size, Constants.HORIZONTAL_CHARACTER);
+        		break;
+        	case 6:
+        		addLineToMatrix(this.impressionMatrix, this.fixedPoint2, Constants.X_POSITION,
+        				this.size, Constants.HORIZONTAL_CHARACTER);
+        		break;
+        	case 7:
+        		addLineToMatrix(this.impressionMatrix, this.fixedPoint3, Constants.X_POSITION,
+        				this.size, Constants.HORIZONTAL_CHARACTER);
+        		break;
+        	default:
+        		break;
     	}
     }
     
@@ -224,8 +218,8 @@ public class ImpresorLCD {
         	
         	// Validate that the character is a digit
         	if (!Character.isDigit(digit)) {
-        		throw new IllegalArgumentException(digit 
-        				+ Constants.CHARACTER_NOT_DIGIT_EXCEPTION);
+        		throw new IllegalArgumentException(
+        				Constants.CHARACTER_NOT_DIGIT_EXCEPTION + digit);
         	}
 
         	int number = Integer.parseInt(String.valueOf(digit));
@@ -249,51 +243,53 @@ public class ImpresorLCD {
      *
      * @param comand     the segment size of the digits and the number to print
      * @param digitSpace the space between digits
-     * 
-     * @throws IllegalArgumentException
      */
-    public void processInput(String comand, int digitSpace) 
-    		throws IllegalArgumentException {
+    public void processInput(String comand, int digitSpace) {
        
         String[] parameters;
         int size;
+        
+        try {
+	        // Validates that chain contains a comma
+	        if (comand != null && !comand.contains(Constants.COMMA_CHARACTER)) {
+	        	throw new IllegalArgumentException(
+	        			Constants.COMMA_MISSING_CHARACTER_EXCEPTION + comand);
+	        }
+	       
+	        // The chain split is made
+	        parameters = comand.split(",");
+	       
+	        // Validate the maximum amount of parameters
+	        if (parameters.length > Constants.TOTAL_PARAMETERS) {
+	        	throw new IllegalArgumentException(
+	        			Constants.MORE_THAN_TWO_PARAMETERS_EXCEPTION + comand); 
+	        }
+	       
+	        // Validate the minimum amount of parameters
+	        if (parameters.length < Constants.TOTAL_PARAMETERS) {
+	        	throw new IllegalArgumentException(
+	        			Constants.LESS_THAN_TWO_PARAMETERS_EXCEPTION + comand); 
+	        }
+	       
+	        // Validates that the SIZE parameter is of numeric type
+	        if (Utilities.isNumeric(parameters[0])) {
+	        	size = Integer.parseInt(parameters[0]);
+	           
+	        	// Validates that the SIZE parameter is between 1 and 10
+	        	if (size < Constants.MINIMUM_SIZE || size > Constants.MAXIMUM_SIZE) {
+	        		throw new IllegalArgumentException(
+	        				Constants.NOT_VALID_SIZE_VALUE_EXCEPTION + size);
+	           }
+	        } else {
+	        	throw new IllegalArgumentException(
+	        			Constants.NOT_NUMBER_SIZE_EXCEPTION + parameters[0]);
+	        }
 
-        // Validates that chain contains a comma
-        if (comand != null && !comand.contains(Constants.COMMA_CHARACTER)) {
-        	throw new IllegalArgumentException(comand 
-        			+ Constants.COMMA_MISSING_CHARACTER_EXCEPTION);
+	        // Prints the number
+	        printNumber(size, parameters[1], digitSpace);
+	        
+        } catch (IllegalArgumentException e) {
+            System.out.println(Constants.ERROR_MESSAGE + e.getMessage());
         }
-       
-        // The chain split is made
-        parameters = comand.split(",");
-       
-        // Validate the maximum amount of parameters
-        if (parameters.length > Constants.TOTAL_PARAMETERS) {
-        	throw new IllegalArgumentException(comand 
-        			+ Constants.MORE_THAN_TWO_PARAMETERS_EXCEPTION); 
-        }
-       
-        // Validate the minimum amount of parameters
-        if (parameters.length < Constants.TOTAL_PARAMETERS) {
-        	throw new IllegalArgumentException(comand 
-        			+ Constants.LESS_THAN_TWO_PARAMETERS_EXCEPTION); 
-        }
-       
-        // Validates that the SIZE parameter is of numeric type
-        if (Utilities.isNumeric(parameters[0])) {
-        	size = Integer.parseInt(parameters[0]);
-           
-        	// Validates that the SIZE parameter is between 1 and 10
-        	if (size < Constants.MINIMUM_SIZE || size > Constants.MAXIMUM_SIZE) {
-        		throw new IllegalArgumentException(size 
-        				+ Constants.NOT_VALID_SIZE_VALUE_EXCEPTION);
-           }
-        } else {
-        	throw new IllegalArgumentException(parameters[0] 
-        			+ Constants.NOT_NUMBER_SIZE_EXCEPTION);
-        }
-
-        // Prints the number
-        printNumber(size, parameters[1], digitSpace);
     }
 }

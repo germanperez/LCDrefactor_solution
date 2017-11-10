@@ -34,22 +34,31 @@ public class Constants {
 	/** Constant MAXIMUM SIZE */
 	public static final Integer MAXIMUM_SIZE = 10;
 	
+	/** Constant DIGIT SPACE */
+	public static final Integer DIGIT_SPACE = 1;
+	
+	/** Constant ERROR MESSAGE */
+	public static final String ERROR_MESSAGE = "Error: ";
+	
+	/** Constant UNEXPECTED_ERROR */
+	public static final String UNEXPECTED_ERROR = "Ha ocurrido un error inesperado.";
+	
 	/** Constant CHARACTER NOT DIGIT EXCEPTION */
-	public static final String CHARACTER_NOT_DIGIT_EXCEPTION = ": Este caracter no es un digito.";
+	public static final String CHARACTER_NOT_DIGIT_EXCEPTION = "Este caracter no es un digito -> ";
 	
 	/** Constant COMMA MISSING CHARACTER EXCEPTION */
-	public static final String COMMA_MISSING_CHARACTER_EXCEPTION = ": Esta cadena no contiene el caracter coma (,).";
+	public static final String COMMA_MISSING_CHARACTER_EXCEPTION = "Esta cadena no contiene el caracter coma -> ";
 	
 	/** Constant MORE THAN TWO PARAMETERS EXCEPTION */
-	public static final String MORE_THAN_TWO_PARAMETERS_EXCEPTION = ": Esta cadena contiene mas de 2 parametros.";
+	public static final String MORE_THAN_TWO_PARAMETERS_EXCEPTION = "Esta cadena contiene mas de 2 parametros -> ";
 	
 	/** Constant LESS THAN TWO PARAMETERS EXCEPTION */
-	public static final String LESS_THAN_TWO_PARAMETERS_EXCEPTION = ": Esta cadena no contiene los parametros requeridos.";
+	public static final String LESS_THAN_TWO_PARAMETERS_EXCEPTION = "Esta cadena no contiene los parametros requeridos -> ";
 	
 	/** Constant NOT VALID SIZE VALUE EXCEPTION */
-	public static final String NOT_VALID_SIZE_VALUE_EXCEPTION = ": El parametro SIZE debe estar entre 1 y 10.";
+	public static final String NOT_VALID_SIZE_VALUE_EXCEPTION = "El parametro SIZE debe estar entre 1 y 10 -> ";
 	
 	/** Constant NOT NUMBER SIZE EXCEPTION */
-	public static final String NOT_NUMBER_SIZE_EXCEPTION = ": El parametro SIZE no es un numero.";
+	public static final String NOT_NUMBER_SIZE_EXCEPTION = "El parametro SIZE no es un numero -> ";
 
 }
